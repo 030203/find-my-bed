@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Backend",
+      "type": "java",
+      "name": "Spring Boot App",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "mainClass": "com.booking.system.BookingSystemApplication",
+      "projectName": "booking-system",
+      "preLaunchTask": "mvn: clean package",
+      "console": "integratedTerminal"
+    }
+  ]
+}

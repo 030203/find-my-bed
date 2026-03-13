@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    "ms-vscode.vscode-node-debug2",
+    "redhat.vscode-xml",
+    "vscjava.extension-pack-for-java",
+    "vscjava.vscode-spring-boot-dashboard",
+    "ms-vscode-remote.remote-wsl",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ]
+}
