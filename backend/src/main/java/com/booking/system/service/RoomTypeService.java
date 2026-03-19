@@ -14,48 +14,58 @@ import java.util.Optional;
 
 @Service
 public class RoomTypeService {
-    
+
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
     @Autowired
     private PropertyRepository propertyRepository;
-    
+
+    @Autowired
+    private PropertyCacheService propertyCacheService;
+
     public List<RoomType> getAllRoomTypes() {
         return roomTypeRepository.findAll();
     }
-    
+
     public Optional<RoomType> getRoomTypeById(Long id) {
         return roomTypeRepository.findById(id);
     }
-    
+
     public List<RoomType> getRoomTypesByPropertyId(Long propertyId) {
         return roomTypeRepository.findByProperty_Id(propertyId);
     }
-    
+
     public List<RoomType> getActiveRoomTypesByPropertyId(Long propertyId) {
         return roomTypeRepository.findByProperty_IdAndStatus(propertyId, RoomType.RoomTypeStatus.ACTIVE);
     }
-    
+
     @Transactional
     public RoomType createRoomType(RoomType roomType) {
         attachProperty(roomType);
         roomType.setCreatedAt(LocalDateTime.now());
         roomType.setUpdatedAt(LocalDateTime.now());
-        return roomTypeRepository.save(roomType);
+        RoomType saved = roomTypeRepository.save(roomType);
+        propertyCacheService.evictPropertyDetail(saved.getPropertyId());
+        return saved;
     }
-    
+
     @Transactional
     public RoomType updateRoomType(Long id, RoomType roomType) {
         roomType.setId(id);
         attachProperty(roomType);
         roomType.setUpdatedAt(LocalDateTime.now());
-        return roomTypeRepository.save(roomType);
+        RoomType saved = roomTypeRepository.save(roomType);
+        propertyCacheService.evictPropertyDetail(saved.getPropertyId());
+        return saved;
     }
-    
+
     @Transactional
     public void deleteRoomType(Long id) {
+        RoomType existing = roomTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("房型不存在"));
         roomTypeRepository.deleteById(id);
+        propertyCacheService.evictPropertyDetail(existing.getPropertyId());
     }
 
     private void attachProperty(RoomType roomType) {

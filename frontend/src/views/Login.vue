@@ -3,7 +3,7 @@
     <div class="auth-shell">
       <div class="auth-left">
         <div class="brand">
-          <div class="brand-title">民宿预定管理系统</div>
+          <div class="brand-title">FindMyBed</div>
           <div class="brand-sub">一处完成预订、支付、运营，全角色通行</div>
         </div>
         <div class="bullets">

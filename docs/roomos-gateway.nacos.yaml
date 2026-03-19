@@ -1,0 +1,22 @@
+﻿# Data ID: roomos-gateway.yaml
+# Group: DEFAULT_GROUP
+# Namespace: public
+
+server:
+  port: 8088
+
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 45s
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+
+roomos:
+  route:
+    booking-service-uri: lb://booking-system
+    ai-service-uri: lb://roomos-ai-service

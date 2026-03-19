@@ -1,0 +1,31 @@
+spring:
+  config:
+    activate:
+      on-profile: nacos
+    import:
+      - optional:nacos:roomos-gateway.yaml?refreshEnabled=true
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:}
+        password: ${NACOS_PASSWORD:}
+        register-enabled: true
+        ephemeral: true
+        watch:
+          enabled: true
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        username: ${NACOS_USERNAME:}
+        password: ${NACOS_PASSWORD:}
+        refresh-enabled: true
+
+roomos:
+  route:
+    booking-service-uri: lb://booking-system
+    ai-service-uri: lb://roomos-ai-service

@@ -15,7 +15,6 @@
         </div>
         <div class="highlights">
           <div class="pill">快速下单</div>
-          <div class="pill">明文密码登录（演示环境）</div>
           <div class="pill">少字段 · 更稳定</div>
         </div>
       </div>
@@ -314,10 +313,14 @@ const submit = async () => {
       status: 'PENDING',
       paymentStatus: 'UNPAID'
     }
-    await bookingApi.create(payload)
-    ElMessage.success('预订提交成功')
+    const { data } = await bookingApi.create(payload)
+    ElMessage.success('预订已创建，请尽快完成支付')
     formRef.value.resetFields()
     dateRange.value = []
+    router.push({
+      name: 'Booking',
+      query: { tab: 'cart', bookingId: data?.id }
+    })
   } catch (err) {
     ElMessage.error(err?.response?.data?.error || '提交失败')
   } finally {

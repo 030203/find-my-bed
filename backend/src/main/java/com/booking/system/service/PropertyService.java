@@ -9,6 +9,9 @@ import com.booking.system.mapper.MerchantRepository;
 import com.booking.system.mapper.PropertyRepository;
 import com.booking.system.mapper.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PropertyService {
-    
+
     @Autowired
     private PropertyRepository propertyRepository;
 
@@ -33,23 +36,23 @@ public class PropertyService {
 
     @Autowired
     private BookingRepository bookingRepository;
-    
+
     public List<Property> getAllProperties() {
         return propertyRepository.findAll();
     }
-    
+
     public Optional<Property> getPropertyById(Long id) {
         return propertyRepository.findById(id);
     }
-    
+
     public List<Property> getPropertiesByMerchantId(Long merchantId) {
         return propertyRepository.findByMerchantId(merchantId);
     }
-    
+
     public List<Property> getPropertiesByCity(String city) {
         return propertyRepository.findByCity(city);
     }
-    
+
     public List<Property> getPropertiesByStatus(String status) {
         try {
             Property.PropertyStatus s = Property.PropertyStatus.valueOf(status.toUpperCase());
@@ -58,11 +61,13 @@ public class PropertyService {
             throw new RuntimeException("非法状态: " + status);
         }
     }
-    
+
+    @Cacheable(cacheNames = PropertyCacheService.FEATURED_CACHE, key = "'all'")
     public List<Property> getFeaturedProperties() {
         return propertyRepository.findByIsFeatured(true);
     }
 
+    @Cacheable(cacheNames = PropertyCacheService.TOP_CACHE, key = "'limit:' + #limit")
     public List<TopPropertyResponse> getTopProperties(int limit) {
         int top = Math.max(1, Math.min(limit, 20));
         List<Object[]> pairs = bookingRepository.findTopPropertyBookingCounts(
@@ -88,9 +93,7 @@ public class PropertyService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 民宿详情：基础信息 + 可用房型（避免实体循环引用，返回精简字段）。
-     */
+    @Cacheable(cacheNames = PropertyCacheService.DETAIL_CACHE, key = "#propertyId")
     public PropertyDetailResponse getPropertyDetail(Long propertyId) {
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new RuntimeException("Property not found"));
@@ -115,7 +118,11 @@ public class PropertyService {
                         .collect(Collectors.toList())
         );
     }
-    
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = PropertyCacheService.FEATURED_CACHE, allEntries = true),
+            @CacheEvict(cacheNames = PropertyCacheService.TOP_CACHE, allEntries = true)
+    })
     @Transactional
     public Property createProperty(Property property) {
         if (property.getMerchantId() == null) {
@@ -131,7 +138,12 @@ public class PropertyService {
         property.setUpdatedAt(LocalDateTime.now());
         return propertyRepository.save(property);
     }
-    
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = PropertyCacheService.DETAIL_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = PropertyCacheService.FEATURED_CACHE, allEntries = true),
+            @CacheEvict(cacheNames = PropertyCacheService.TOP_CACHE, allEntries = true)
+    })
     @Transactional
     public Property updateProperty(Long id, Property property) {
         property.setId(id);
@@ -139,6 +151,11 @@ public class PropertyService {
         return propertyRepository.save(property);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = PropertyCacheService.DETAIL_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = PropertyCacheService.FEATURED_CACHE, allEntries = true),
+            @CacheEvict(cacheNames = PropertyCacheService.TOP_CACHE, allEntries = true)
+    })
     @Transactional
     public Property updateStatus(Long id, Property.PropertyStatus status) {
         Property property = propertyRepository.findById(id)
@@ -147,7 +164,12 @@ public class PropertyService {
         property.setUpdatedAt(LocalDateTime.now());
         return propertyRepository.save(property);
     }
-    
+
+    @Caching(evict = {
+            @CacheEvict(cacheNames = PropertyCacheService.DETAIL_CACHE, key = "#id"),
+            @CacheEvict(cacheNames = PropertyCacheService.FEATURED_CACHE, allEntries = true),
+            @CacheEvict(cacheNames = PropertyCacheService.TOP_CACHE, allEntries = true)
+    })
     @Transactional
     public void deleteProperty(Long id) {
         propertyRepository.deleteById(id);

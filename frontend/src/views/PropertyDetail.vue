@@ -301,9 +301,13 @@ const submitBooking = async () => {
       status: 'PENDING',
       paymentStatus: 'UNPAID'
     }
-    await bookingApi.create(payload)
-    ElMessage.success('预订已提交')
+    const { data } = await bookingApi.create(payload)
+    ElMessage.success('预订已创建，请尽快完成支付')
     bookingDialog.value = false
+    router.push({
+      name: 'Booking',
+      query: { tab: 'cart', bookingId: data?.id }
+    })
   } catch (err) {
     if (err !== false) {
       ElMessage.error(err?.response?.data?.error || '提交失败')

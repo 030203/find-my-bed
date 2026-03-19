@@ -2,9 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Backend",
       "type": "java",
+      "name": "GatewayApplication",
+      "request": "launch",
+      "mainClass": "com.booking.gateway.GatewayApplication",
+      "projectName": "booking-gateway"
+    },
+    {
       "name": "Spring Boot App",
+      "type": "java",
       "request": "launch",
       "cwd": "${workspaceFolder}/backend",
       "mainClass": "com.booking.system.BookingSystemApplication",

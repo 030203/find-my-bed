@@ -1,8 +1,16 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: '/api',
   timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+const assistantClient = axios.create({
+  baseURL: '/ai-api',
+  timeout: 45000,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -130,6 +138,11 @@ export const couponApi = {
   create: (data) => api.post('/coupons', data),
   update: (id, data) => api.put(`/coupons/${id}`, data),
   delete: (id) => api.delete(`/coupons/${id}`)
+}
+
+export const assistantApi = {
+  getSuggestions: () => assistantClient.get('/suggestions'),
+  chat: (data) => assistantClient.post('/chat', data)
 }
 
 export default api

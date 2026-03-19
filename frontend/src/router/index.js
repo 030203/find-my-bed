@@ -14,6 +14,7 @@ import RoomType from '../views/RoomType.vue'
 import Admin from '../views/Admin.vue'
 import UserProfile from '../views/UserProfile.vue'
 import MerchantOrders from '../views/MerchantOrders.vue'
+import PendingPayment from '../views/PendingPayment.vue'
 
 const routes = [
   {
@@ -60,6 +61,11 @@ const routes = [
     path: '/payments',
     name: 'Payment',
     component: Payment
+  },
+  {
+    path: '/pending-payment',
+    name: 'PendingPayment',
+    component: PendingPayment
   },
   {
     path: '/merchant-orders',

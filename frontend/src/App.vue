@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <div id="app">
     <el-container>
       <el-header>
         <div class="header-content">
           <div class="logo">
             <el-icon><House /></el-icon>
-            <span class="logo-text">民宿预定管理系统</span>
+            <span class="logo-text">FindMyBed</span>
           </div>
           <nav class="nav-menu">
             <router-link to="/" class="nav-link">
@@ -18,12 +18,13 @@
             </router-link>
             <router-link to="/booking" class="nav-link" v-if="isLoggedIn">
               <el-icon><Calendar /></el-icon>
-              <span>预订管理</span>
+              <span>{{ bookingNavText }}</span>
             </router-link>
             <router-link to="/payments" class="nav-link" v-if="isLoggedIn">
               <el-icon><Collection /></el-icon>
               <span>支付管理</span>
             </router-link>
+
             <router-link
               to="/merchant-orders"
               class="nav-link"
@@ -79,6 +80,7 @@
         </div>
       </el-main>
     </el-container>
+    <AiAssistant />
   </div>
 </template>
 
@@ -86,11 +88,13 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { House, HomeFilled, Calendar, User, Avatar, ArrowDown, Tickets, Collection } from '@element-plus/icons-vue'
+import AiAssistant from './components/AiAssistant.vue'
 
 const router = useRouter()
 const route = useRoute()
 const userInfo = ref(null)
 const isLoggedIn = computed(() => !!userInfo.value)
+const bookingNavText = computed(() => (userInfo.value?.role === 'USER' ? '购物车 / 订单' : '预订管理'))
 
 const syncUser = () => {
   const userStr = localStorage.getItem('user')
@@ -289,3 +293,5 @@ const handleCommand = (command) => {
   }
 }
 </style>
+
+

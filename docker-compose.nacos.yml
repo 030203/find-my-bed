@@ -1,0 +1,10 @@
+services:
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: roomos-nacos
+    environment:
+      MODE: standalone
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    restart: unless-stopped

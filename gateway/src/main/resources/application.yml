@@ -1,0 +1,58 @@
+server:
+  port: ${ROOMOS_GATEWAY_PORT:8088}
+
+spring:
+  application:
+    name: roomos-gateway
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+    gateway:
+      httpclient:
+        connect-timeout: ${ROOMOS_GATEWAY_CONNECT_TIMEOUT:5000}
+        response-timeout: ${ROOMOS_GATEWAY_RESPONSE_TIMEOUT:45s}
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:*"
+              - "http://127.0.0.1:*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      routes:
+        - id: booking-system
+          uri: ${roomos.route.booking-service-uri}
+          predicates:
+            - Path=/api/**
+        - id: ai-service
+          uri: ${roomos.route.ai-service-uri}
+          predicates:
+            - Path=/ai-api/**
+          filters:
+            - StripPrefix=1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: ${ROOMOS_GATEWAY_LOG_LEVEL:INFO}
+
+roomos:
+  route:
+    booking-service-uri: ${ROOMOS_BOOKING_SERVICE_URI:http://localhost:8080}
+    ai-service-uri: ${AI_SERVICE_URL:http://localhost:5001}
